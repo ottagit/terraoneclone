@@ -6,7 +6,7 @@ INPUT_FILE="$3"
 OUTPUT_FILE="$4"
 
 echo "Encrypting contents of $INPUT_FILE using CMK $CMK_ID..."
-ciphetext=$(aws kms encrypt \
+ciphertext=$(aws kms encrypt \
   --key-id "$CMK_ID" \
   --region "$AWS_REGION" \
   --plaintext "fileb://$INPUT_FILE" \
