@@ -3,16 +3,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Since the secret is stored as JSON, use the jsonencode
+# function to parse the JSON into the local variable db_creds
 locals {
-  db_creds = yamldecode(data.aws_kms_secrets.creds.plaintext["db"])
+  db_creds = jsondecode(
+    data.aws_secretsmanager_secret_version.creds.secret_string
+  )
 }
 
-data "aws_kms_secrets" "creds" {
-  secret {
-    name = "db"
-    payload = file("${path.module}/db-creds.yml.encrypted")
-  }
+# Read the db-creds secret
+data "aws_secretsmanager_secret_version" "creds" {
+  secret_id = "db-creds"
 }
+
 resource "aws_db_instance" "example" {
   identifier_prefix = "terraone"
   engine = "mysql"
